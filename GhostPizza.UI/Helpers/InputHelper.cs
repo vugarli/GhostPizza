@@ -1,5 +1,7 @@
 ﻿
 
+using GhostPizza.UI.ExceptionRelated;
+
 namespace GhostPizza.UI.Helpers
 {
     internal static class InputHelper
@@ -20,16 +22,14 @@ namespace GhostPizza.UI.Helpers
             return input;
         }
 
-        public static int PromptAndGetPositiveInt(string prompt)
+        public static int PromptAndTryGetPositiveInt(string prompt)
         {
             int input = 0;
             do
             {
                 input = Convert.ToInt32(PromptAndGetNonEmptyString(prompt));
-
                 if (input < 0)
-                    ConsoleHelpers.PrintError("Positive input is required!");
-
+                    throw ExceptionHelper.InputFormatInvalidException("Positive input is required!");
             } while (input < 0);
 
             return input;
@@ -40,7 +40,7 @@ namespace GhostPizza.UI.Helpers
             int input = 0;
             do
             {
-                input = PromptAndGetPositiveInt(prompt);
+                input = PromptAndTryGetPositiveInt(prompt);
 
                 if (input > maxRange)
                     ConsoleHelpers.PrintError($"Positive input with {maxRange} max value is required!");
@@ -127,26 +127,40 @@ namespace GhostPizza.UI.Helpers
         }
 
 
-        public static T DisplayAndGetElementBySelection<T>
-            (T[] elements, Action printBuffer, string header = "")
+        public static void DisplayProductsAndGetBasketFromConsole
+            (InputProduct[] elements, Action printBuffer, string dialogPrompt, string header = "")
         {
             int currentElementIndex = 0;
             do
             {
                 Console.Clear();
+                var currentTotal = elements.Where(p => p.IsAddedToBasket).Select(p => p.Price * p.Amount).Sum();
                 printBuffer.Invoke();
+                Console.WriteLine("Current total: " + currentTotal);
+                ConsoleHelpers.PrintWarning("Press B to exit menu with current basket!\n");
+                ConsoleHelpers.PrintWarning(elements[currentElementIndex].IsAddedToBasket ? "Press X to remove item":"Press enter to add item to basket");
 
+                int colIndx=0;
+                int rowIndx=0;
                 if (!string.IsNullOrEmpty(header))
                     ConsoleHelpers.PrintWarning(header + ": ");
 
                 for (int i = 0; i < elements.Length; i++)
                 {
                     if (i == currentElementIndex)
+                    {
+                        colIndx = Console.CursorLeft;
+                        rowIndx = Console.CursorTop;
                         ConsoleHelpers.InlineSelectionCursor();
+                    }
                     else
                         Console.Write("  ");
-                    Console.WriteLine(elements[i]);
+
+                    var itemStatusMessage = (elements[i].Amount != 0 ? $" {elements[i].Amount}x Added to basket" : "");
+                    Console.WriteLine(elements[i] + itemStatusMessage );
                 }
+                
+
                 var keyPress = Console.ReadKey().Key;
 
                 if (keyPress == ConsoleKey.UpArrow)
@@ -159,8 +173,29 @@ namespace GhostPizza.UI.Helpers
                     currentElementIndex = currentElementIndex + 1 > elements.Length - 1 ? elements.Length - 1 : currentElementIndex + 1;
                 }
 
-                if (keyPress == ConsoleKey.Enter)
-                    return elements[currentElementIndex];
+                if (keyPress == ConsoleKey.B)
+                    return;
+
+                if(!elements[currentElementIndex].IsAddedToBasket)
+                {
+                    if (keyPress == ConsoleKey.Enter)
+                    {
+                        colIndx += elements[currentElementIndex].ToString().Length + 6;
+                        Console.SetCursorPosition(colIndx,rowIndx);
+                        ConsoleHelpers.InlineWarning(dialogPrompt);
+                        Console.SetCursorPosition(colIndx+dialogPrompt.Length+5,rowIndx);
+                        int amount = PromptAndTryGetPositiveInt("");
+                        colIndx = 0;
+                        elements[currentElementIndex].Amount = amount;
+                        elements[currentElementIndex].IsAddedToBasket = true;    
+                    }
+                }
+
+                if (keyPress == ConsoleKey.X)
+                {
+                    elements[currentElementIndex].Amount = 0;
+                    elements[currentElementIndex].IsAddedToBasket = false;
+                }
 
             } while (true);
         }

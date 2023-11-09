@@ -17,7 +17,8 @@ namespace GhostPizza.UI
         Show_All_Pizzas,
         Order,
         CRUD_Pizza,
-        CRUD_User
+        CRUD_User,
+        Quit
     }
 
     public enum PizzaCrudCommand

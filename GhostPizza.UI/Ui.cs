@@ -24,14 +24,15 @@ namespace GhostPizza.UI
                 UserMenuCommand.Show_All_Pizzas,
                 UserMenuCommand.Order,
                 UserMenuCommand.CRUD_Pizza,
-                UserMenuCommand.CRUD_User
+                UserMenuCommand.CRUD_User,
+                UserMenuCommand.Quit
             };
 
-        public string[] prods = new[]
+        public InputProduct[] prods = new InputProduct[]
         {
-            "Gobelekli",
-            "Pendirli",
-            "Salami"
+            new(0,"Pizza1",5.00m),
+            new(1,"Pizza2",3.00m),
+            new(2,"Pizza3",2.00m),
         };
 
         public Ui()
@@ -43,8 +44,8 @@ namespace GhostPizza.UI
         public void Start()
         {
 
-            DisplayLoginRegisterMenu();
-
+            //DisplayLoginRegisterMenu();
+            DisplayUserMenu();
         }
 
         public void DisplayLoginRegisterMenu()
@@ -61,11 +62,50 @@ namespace GhostPizza.UI
 
         }
 
+        public void DisplayUserMenu()
+        {
+            UserMenuCommand command;
+            do
+            {
+                command = InputHelper.DisplayAndGetCommandBySelection(userMenuCommands, PrintBuffer);
+
+                switch (command)
+                {
+                    case UserMenuCommand.Show_All_Pizzas:
+                        DisplayProductsMenu();
+                        break;
+                    case UserMenuCommand.Order:
+                        Buffer = (prods.Sum(p => p.Amount * p.Price)).ToString();
+                        break;
+                    case UserMenuCommand.CRUD_Pizza:
+                        break;
+                    case UserMenuCommand.CRUD_User:
+                        break;
+                }
+            } while (command != UserMenuCommand.Quit);
+        }
+
         public void DisplayProductsMenu()
         {
-            var element = InputHelper.DisplayAndGetElementBySelection(prods, () => Console.WriteLine());
+            here:
+            try
+            {
+                InputHelper.DisplayProductsAndGetBasketFromConsole(prods,PrintBuffer,"How many? ");
+            }
+            catch (Exception ex) 
+            {
+                Buffer = ex.Message;
+                goto here;
+            }
         }
-        
+
+        public string Buffer { get; set; }
+        public void PrintBuffer()
+        {
+            Console.WriteLine(Buffer);
+            Buffer = string.Empty;
+        }
+
         public void LoginUser()
         {
 

@@ -14,5 +14,9 @@ namespace GhostPizza.UI.ExceptionRelated
         public static CommandInvalidException CommandInvalidException(int? command = null)
             => new CommandInvalidException($"Input command ({command}) is invalid!");
 
+        public static InputFormatInvalidException InputFormatInvalidException(string msg)
+            => new InputFormatInvalidException(msg);
+
+
     }
 }

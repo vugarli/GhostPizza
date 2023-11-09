@@ -1,6 +1,6 @@
 ﻿namespace GhostPizza.InfraStructure
 {
-	public class DataBase
+	public static class DataBase
 	{
 
 	}

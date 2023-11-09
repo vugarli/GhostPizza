@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace GhostPizza.Core.Models
 {
-    internal class UsertType
+    public enum UserType
     {
+        Admin = 1,
+        RegularUser
     }
 }

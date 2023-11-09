@@ -6,7 +6,27 @@ using System.Threading.Tasks;
 
 namespace GhostPizza.Core.Models
 {
-    internal class User
+    public class User
     {
+        private static int _idCounter = 1;
+
+        public int Id { get; init; } = _idCounter++;
+        public UserType UserType { get; set; } = UserType.RegularUser;
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string Password { get; set; }
+        public string UserName { get; init; }
+
+        // Constructor ile tüm propları alarak oluşturma
+        public User(string name, string surname, string password, string username)
+        {
+            Name = name;
+            Surname = surname;
+            Password = password;
+            UserName = username;
+        }
+
+        public Basket Basket { get; set; }
     }
 }
+

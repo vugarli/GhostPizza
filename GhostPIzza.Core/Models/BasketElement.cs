@@ -6,7 +6,15 @@ using System.Threading.Tasks;
 
 namespace GhostPizza.Core.Models
 {
-    internal class BasketElement
+    public record BasketElement
     {
+        public int PizzaId { get; init; }
+        public int Count { get; init; }
+
+        public BasketElement(int pizzaId, int count)
+        {
+            PizzaId = pizzaId;
+            Count = count;
+        }
     }
 }

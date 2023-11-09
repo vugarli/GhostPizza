@@ -6,7 +6,17 @@ using System.Threading.Tasks;
 
 namespace GhostPizza.Core.Models
 {
-    internal class Pizza
+    public class Pizza
     {
+        private static int _idCounter = 1;
+
+        public int Id { get; private set; } = _idCounter++;
+        public string Name { get; private set; }
+        public List<BasketElement> Products { get; set; } = new List<BasketElement>();
+
+        public Pizza(string name)
+        {
+            Name = name;
+        }
     }
 }

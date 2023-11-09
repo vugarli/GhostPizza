@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace GhostPizza.Core.Models
 {
-    internal class Basket
+    public class Basket
     {
+        public List<BasketElement> Products { get; set; } = new List<BasketElement>();
     }
 }

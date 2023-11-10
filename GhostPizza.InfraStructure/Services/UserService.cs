@@ -8,37 +8,16 @@ namespace GhostPizza.InfraStructure.Services
 		public static void AddUser(User user)
 		{
 			DataBase.Users.Add(user);
-			Console.WriteLine("User added.");
 		}
 
 		public static void RemoveUser(int id)
 		{
-			var userToRemove = DataBase.Users.Find(user => user.Id == id);
-			if (userToRemove != null)
-			{
-				DataBase.Users.Remove(userToRemove);
-				Console.WriteLine("User removed.");
-			}
-			else
-			{
-				throw new UserNotFoundException("User not found.");
-			}
+			DataBase.Users.Remove(GetUserById(id));
 		}
 
 		public static void UpdateUserRole(int id, UserType newUserType)
 		{
-			var existingUser = DataBase.Users.Find(user => user.Id == id);
-
-			if (existingUser != null)
-			{
-				existingUser.UserType = newUserType;
-
-				Console.WriteLine("User role updated.");
-			}
-			else
-			{
-				throw new UserNotFoundException("User not found.");
-			}
+			GetUserById(id).UserType = newUserType;
 		}
 
 		public static User GetUserById(int id)
@@ -56,7 +35,7 @@ namespace GhostPizza.InfraStructure.Services
 
 		public static List<User> GetAllUsers()
 		{
-			return DataBase.Users != null ? DataBase.Users.ToList() : new List<User>();
+			return DataBase.Users;
 		}
 	}
 }

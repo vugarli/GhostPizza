@@ -33,6 +33,14 @@ namespace GhostPizza.InfraStructure.Services
 			}
 		}
 
+		public static void UsernameCheck(string username)
+		{
+			if (DataBase.Users.Any(user => user.UserName == username))
+			{
+				throw new UsernameAlreadyExistsException("Username is already taken. Please choose a different username.");
+			}
+		}
+
 		public static List<User> GetAllUsers()
 		{
 			return DataBase.Users;

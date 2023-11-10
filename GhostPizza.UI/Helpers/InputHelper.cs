@@ -22,12 +22,34 @@ namespace GhostPizza.UI.Helpers
             return input;
         }
 
+        public static string PromptAndTryGetNonEmptyString(string prompt)
+        {
+            string input = null;
+            do
+            {
+                Console.Write(prompt);
+                input = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(input) || input == string.Empty)
+                    throw ExceptionHelper.InputFormatInvalidException("Empty input is not allowed!");
+
+            } while (string.IsNullOrWhiteSpace(input) || input == string.Empty);
+
+            return input;
+        }
+
+        public static void PromptAndGetOrderInfoFromConsole()
+        {
+            var mobileNumber = PromptAndTryGetNonEmptyString("Phone number: ");
+            var address = PromptAndTryGetNonEmptyString("Address: ");
+        }
+
         public static int PromptAndTryGetPositiveInt(string prompt)
         {
             int input = 0;
             do
             {
-                input = Convert.ToInt32(PromptAndGetNonEmptyString(prompt));
+                input = Convert.ToInt32(PromptAndTryGetNonEmptyString(prompt));
                 if (input < 0)
                     throw ExceptionHelper.InputFormatInvalidException("Positive input is required!");
             } while (input < 0);

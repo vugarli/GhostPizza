@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace GhostPizza.Core.Validators
 {
-    static class Validators
+    public static class Validators
     {
         public static void ValidateName(string name)
         {
             if (name.Length < 3 || name.Length > 16)
             {
-                throw new InvalidUserNameException("Username must be 3-16 characters long.");
+                throw new InvalidUserNameException("Name must be 3-16 characters long.");
             }
         }
 

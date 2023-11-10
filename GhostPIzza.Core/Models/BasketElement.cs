@@ -8,12 +8,12 @@ namespace GhostPizza.Core.Models
 {
     public record BasketElement
     {
-        public int PizzaId { get; init; }
+        public Pizza Pizza { get; init; }
         public int Count { get; init; }
 
-        public BasketElement(int pizzaId, int count)
+        public BasketElement(Pizza product, int count)
         {
-            PizzaId = pizzaId;
+            Pizza = product;
             Count = count;
         }
     }

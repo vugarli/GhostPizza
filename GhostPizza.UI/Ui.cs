@@ -1,4 +1,9 @@
-﻿using GhostPizza.UI.Helpers;
+﻿using GhostPizza.Core.Models;
+using GhostPizza.InfraStructure;
+using GhostPizza.InfraStructure.Exceptions;
+using GhostPizza.InfraStructure.Services;
+using GhostPizza.UI.Extensions;
+using GhostPizza.UI.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -11,6 +16,8 @@ namespace GhostPizza.UI
 {
     internal class Ui
     {
+        public User LoggedInUser { get; set; } = null;
+
         LoginRegisterMenuCommand[] initialCommands = 
             new LoginRegisterMenuCommand[]
             {
@@ -23,18 +30,38 @@ namespace GhostPizza.UI
             {
                 UserMenuCommand.Show_All_Pizzas,
                 UserMenuCommand.Order,
+                UserMenuCommand.Quit
+            };
+        UserMenuCommand[] adminUserMenuCommands =
+            new UserMenuCommand[]
+            {
+                UserMenuCommand.Show_All_Pizzas,
+                UserMenuCommand.Order,
                 UserMenuCommand.CRUD_Pizza,
                 UserMenuCommand.CRUD_User,
                 UserMenuCommand.Quit
             };
 
-        public InputProduct[] prods = new InputProduct[]
-        {
-            new(0,"Pizza1",5.00m),
-            new(1,"Pizza2",3.00m),
-            new(2,"Pizza3",2.00m),
-        };
-        public string Buffer { get; set; } = string.Empty;
+
+        PizzaCrudCommand[] pizzaCrudCommands =
+            new PizzaCrudCommand[]
+            {
+                PizzaCrudCommand.Show_All,
+                PizzaCrudCommand.Add,
+                PizzaCrudCommand.Update,
+                PizzaCrudCommand.Remove,
+                PizzaCrudCommand.Quit
+            };
+        UserCrudCommand[] userCrudCommands =
+            new UserCrudCommand[]
+            {
+                UserCrudCommand.Show_All,
+                UserCrudCommand.Add,
+                UserCrudCommand.Swap_Role,
+                UserCrudCommand.Remove,
+                UserCrudCommand.Quit
+            };
+
 
         public Ui()
         {
@@ -44,39 +71,29 @@ namespace GhostPizza.UI
 
         public void Start()
         {
-            ExecWhileHandlingError(DisplayLoginRegisterMenu);
-        }
-
-        public void ExecWhileHandlingError(Action action)
-        {
-            bool failed = false;
-            do
+            while (true) 
             {
-                try
+                while (LoggedInUser == null)
                 {
-                    action.Invoke();
-                    failed = false;
+                    ConsoleHelpers.ExecWhileHandlingError(DisplayLoginRegisterMenu);
                 }
-                catch (Exception e)
-                {
-                    BufferError(e.Message);
-                    failed = true;
-                }
-            } while (failed);
+                ConsoleHelpers.ExecWhileHandlingError(DisplayUserMenu);
+                LoggedInUser = null;
+            }
+
         }
 
         public void DisplayLoginRegisterMenu()
         {
-            LoginRegisterMenuCommand command = InputHelper.DisplayAndGetCommandBySelection(initialCommands,() => Console.WriteLine(""));
+            LoginRegisterMenuCommand command = InputHelper.DisplayAndGetCommandBySelection(initialCommands);
                 
             switch (command)
             {
                 case LoginRegisterMenuCommand.Login:
-                        ExecWhileHandlingError(LoginUser);
-                        ExecWhileHandlingError(DisplayUserMenu);
+                        LoginUser();
                     break;
                 case LoginRegisterMenuCommand.Register:
-                        ExecWhileHandlingError(RegisterUser);
+                        RegisterUser();
                     break;
             }
         }
@@ -86,59 +103,113 @@ namespace GhostPizza.UI
             UserMenuCommand command;
             do
             {
-                command = InputHelper.DisplayAndGetCommandBySelection(userMenuCommands, PrintBuffer);
+                command = InputHelper.DisplayAndGetCommandBySelection(LoggedInUser.UserType == UserType.Admin ? adminUserMenuCommands : userMenuCommands);
 
                 switch (command)
                 {
                     case UserMenuCommand.Show_All_Pizzas:
-                        ExecWhileHandlingError(DisplayProductsMenu);
+                        ConsoleHelpers.ExecWhileHandlingError(DisplayProductsMenu);
                         break;
                     case UserMenuCommand.Order:
-                        Buffer = (prods.Sum(p => p.Amount * p.Price)).ToString();
+                        ConsoleHelpers.Buffer = (LoggedInUser.Basket.Products.Sum(p => p.Count * p.Pizza.Price)).ToString();
                         InputHelper.PromptAndGetOrderInfoFromConsole();
                         break;
                     case UserMenuCommand.CRUD_Pizza:
+                        ConsoleHelpers.ExecWhileHandlingError(DisplayPizzaCrud);
                         break;
                     case UserMenuCommand.CRUD_User:
+                        DisplayUserCrud();
                         break;
                 }
             } while (command != UserMenuCommand.Quit);
         }
 
+        public void DisplayPizzaCrud()
+        {
+            PizzaCrudCommand command;
+            do
+            {
+                command = InputHelper.DisplayAndGetCommandBySelection(pizzaCrudCommands);
+
+                switch (command)
+                {
+                    case PizzaCrudCommand.Show_All:
+                        ConsoleHelpers.AddListToBuffer(DataBase.Pizzas);
+                        break;
+                    case PizzaCrudCommand.Add:
+                        (string name, decimal price) = PizzaHelper.GetPizzaInfoFromConsole();
+                        PizzaService.AddPizza(new Pizza(name,price));
+                        ConsoleHelpers.Buffer = "Added new pizza!";
+                        break;
+                    case PizzaCrudCommand.Update:
+                        var idToUpdate = InputHelper.DisplayAndGetElementBySelection(DataBase.Pizzas, "Choose pizza to update");
+                        PizzaHelper.UpdatePizzaFromConsole(DataBase.Pizzas[idToUpdate]);
+                        break;
+                    case PizzaCrudCommand.Remove:
+                        var idToRemove = InputHelper.DisplayAndGetElementBySelection(DataBase.Pizzas,"Remove pizza");
+                        PizzaService.RemovePizza(DataBase.Pizzas[idToRemove].Id);
+                        ConsoleHelpers.BufferError("Removed pizza!");
+                        break;
+                }
+            } while (command != PizzaCrudCommand.Quit);
+        }
+
+        public void DisplayUserCrud()
+        {
+            UserCrudCommand command;
+            do
+            {
+                command = InputHelper.DisplayAndGetCommandBySelection(userCrudCommands);
+
+                switch (command)
+                {
+                    case UserCrudCommand.Show_All:
+                        ConsoleHelpers.AddListToBuffer(DataBase.Users);
+                        break;
+                    case UserCrudCommand.Add:
+                        var userDetails = UserHelper.GetUserDetails();
+                        UserService.AddUser(userDetails.ToUser());
+                        ConsoleHelpers.Buffer = "Added new user!";
+                        break;
+                    case UserCrudCommand.Swap_Role:
+                        var idToUpdate = InputHelper.DisplayAndGetElementBySelection(DataBase.Users, "Choose user to swap role");
+                        if (DataBase.Users[idToUpdate].UserType == UserType.Admin)
+                            DataBase.Users[idToUpdate].UserType = UserType.RegularUser;
+                        else
+                            DataBase.Users[idToUpdate].UserType = UserType.Admin;
+                        ConsoleHelpers.Buffer = "Updated user!";
+                        break;
+                    case UserCrudCommand.Remove:
+                        var idToRemove = InputHelper.DisplayAndGetElementBySelection(DataBase.Users, "Remove user");
+                        if (DataBase.Users[idToRemove].UserType == UserType.Admin)
+                            throw new AccessDeniedException("You can't remove Admin User!");
+                        UserService.RemoveUser(DataBase.Users[idToRemove].Id);
+                        ConsoleHelpers.BufferError("Removed user!");
+                        break;
+                }
+            } while (command != UserCrudCommand.Quit);
+        }
+
+
         public void DisplayProductsMenu()
         {
-            InputHelper.DisplayProductsAndGetBasketFromConsole(prods,PrintBuffer,"How many? ");
-        }
-
-        private void BufferError(string msg)
-        {
-            Buffer = string.Empty;
-            Buffer = $"(!) {msg}";
-        }
-
-        /// <summary>
-        /// Prints buffer to the console. Handles coloring (warning, error)
-        /// </summary>
-        public void PrintBuffer()
-        {
-            if (Buffer != string.Empty)
-            {
-                if (Buffer.StartsWith("(!)"))
-                    ConsoleHelpers.PrintError($"\n{Buffer}\n");
-                else
-                    ConsoleHelpers.PrintPositive($"\n{Buffer}\n");
-            }
-            Buffer = string.Empty;
+            InputHelper.DisplayProductsAndGetBasketFromConsole(LoggedInUser.Basket,
+                DataBase.Pizzas.Select(p=> new SaleProduct(p)).ToList()
+                ,"How many? ");
         }
 
         public void LoginUser()
         {
-
+            (string username, string password) = UserHelper.GetLoginCreds();
+            LoggedInUser = LoginRegisterService.Login(username, password);
+            ConsoleHelpers.Buffer = $"Welcome back {LoggedInUser.Name}";
         }
 
         public void RegisterUser()
         {
-
+            ConsoleHelpers.PrintBuffer();
+            var userDto = UserHelper.GetUserDetails();
+            LoginRegisterService.Register(userDto.name,userDto.surname,userDto.password,userDto.username);
         }
 
     }

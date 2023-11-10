@@ -3,7 +3,7 @@ using GhostPizza.InfraStructure.Exceptions;
 
 namespace GhostPizza.InfraStructure.Services
 {
-	internal static class UserService
+	public static class UserService
 	{
 		public static void AddUser(User user)
 		{

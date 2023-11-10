@@ -12,6 +12,56 @@ namespace GhostPizza.UI.Helpers
         private const ConsoleColor WARNING_COLOR = ConsoleColor.Yellow;
         private const ConsoleColor POSITIVE_COLOR = ConsoleColor.Green;
         private const string SELECTION_CURSOR = ">  ";
+        public static string Buffer { get; set; } = string.Empty;
+
+
+
+        public static void ExecWhileHandlingError(Action action)
+        {
+            bool failed = false;
+            do
+            {
+                try
+                {
+                    action.Invoke();
+                    failed = false;
+                }
+                catch (Exception e)
+                {
+                    BufferError(e.Message);
+                    failed = true;
+                }
+            } while (failed);
+        }
+
+        /// <summary>
+        /// Prints buffer to the console. Handles coloring (warning, error)
+        /// </summary>
+        public static void PrintBuffer()
+        {
+            if (Buffer != string.Empty)
+            {
+                if (Buffer.StartsWith("(!)"))
+                    ConsoleHelpers.PrintError($"\n{Buffer}\n");
+                else
+                    ConsoleHelpers.PrintPositive($"\n{Buffer}\n");
+            }
+            Buffer = string.Empty;
+        }
+
+        public static void BufferError(string msg)
+        {
+            Buffer = string.Empty;
+            Buffer = $"(!) {msg}";
+        }
+
+        public static void AddListToBuffer<T>(List<T> elements)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var e in elements)
+                sb.Append(">> ").AppendLine(e.ToString());
+            Buffer = sb.ToString();
+        }
 
         public static void InlineError(string errorMsg)
         {

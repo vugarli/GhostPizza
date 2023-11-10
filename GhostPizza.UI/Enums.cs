@@ -26,14 +26,16 @@ namespace GhostPizza.UI
         Show_All,
         Add,
         Update,
-        Remove
+        Remove,
+        Quit
     }
     public enum UserCrudCommand
     {
         Show_All,
         Add,
-        Update,
-        Remove
+        Swap_Role,
+        Remove,
+        Quit
     }
 
 

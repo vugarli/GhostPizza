@@ -25,7 +25,12 @@ namespace GhostPizza.Core.Models
             UserName = username;
         }
 
-        public Basket Basket { get; set; }
+        public Basket Basket { get; set; } = new();
+
+        public override string ToString()
+        {
+            return $"{Id} {Name} {Surname} {UserName}";
+        }
     }
 }
 

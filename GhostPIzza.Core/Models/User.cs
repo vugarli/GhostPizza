@@ -17,7 +17,6 @@ namespace GhostPizza.Core.Models
         public string Password { get; set; }
         public string UserName { get; init; }
 
-        // Constructor ile tüm propları alarak oluşturma
         public User(string name, string surname, string password, string username)
         {
             Name = name;

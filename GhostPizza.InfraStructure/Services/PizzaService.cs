@@ -24,6 +24,7 @@ namespace GhostPizza.InfraStructure.Services
 				throw new PizzaNotFoundException("Pizza not found.");
 			}
 		}
+
 		public static void UpdatePizzaName(int id, string newName)
 		{
 			var existingPizza = DataBase.Pizzas.Find(pizza => pizza.Id == id);
@@ -40,12 +41,12 @@ namespace GhostPizza.InfraStructure.Services
 			}
 		}
 
-		public static void GetPizzaById(int id)
+		public static Pizza GetPizzaById(int id)
 		{
 			var pizza = DataBase.Pizzas.Find(pizza => pizza.Id == id);
 			if (pizza != null)
 			{
-				Console.WriteLine($"Id: {pizza.Id}\nName: {pizza.Name}");
+				return pizza;
 			}
 			else
 			{

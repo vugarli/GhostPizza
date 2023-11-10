@@ -11,7 +11,7 @@ namespace GhostPizza.Core.Models
         private static int _idCounter = 1;
 
         public int Id { get; private set; } = _idCounter++;
-        public string Name { get; private set; }
+        public string Name { get; set; }
         public List<BasketElement> Products { get; set; } = new List<BasketElement>();
 
         public Pizza(string name)

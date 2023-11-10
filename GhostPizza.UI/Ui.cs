@@ -34,6 +34,7 @@ namespace GhostPizza.UI
             new(1,"Pizza2",3.00m),
             new(2,"Pizza3",2.00m),
         };
+        public string Buffer { get; set; } = string.Empty;
 
         public Ui()
         {
@@ -43,23 +44,41 @@ namespace GhostPizza.UI
 
         public void Start()
         {
+            ExecWhileHandlingError(DisplayLoginRegisterMenu);
+        }
 
-            //DisplayLoginRegisterMenu();
-            DisplayUserMenu();
+        public void ExecWhileHandlingError(Action action)
+        {
+            bool failed = false;
+            do
+            {
+                try
+                {
+                    action.Invoke();
+                    failed = false;
+                }
+                catch (Exception e)
+                {
+                    BufferError(e.Message);
+                    failed = true;
+                }
+            } while (failed);
         }
 
         public void DisplayLoginRegisterMenu()
         {
-
-            var command = InputHelper.DisplayAndGetCommandBySelection(initialCommands,() => Console.WriteLine(""));
+            LoginRegisterMenuCommand command = InputHelper.DisplayAndGetCommandBySelection(initialCommands,() => Console.WriteLine(""));
+                
             switch (command)
             {
                 case LoginRegisterMenuCommand.Login:
+                        ExecWhileHandlingError(LoginUser);
+                        ExecWhileHandlingError(DisplayUserMenu);
                     break;
                 case LoginRegisterMenuCommand.Register:
+                        ExecWhileHandlingError(RegisterUser);
                     break;
             }
-
         }
 
         public void DisplayUserMenu()
@@ -72,10 +91,11 @@ namespace GhostPizza.UI
                 switch (command)
                 {
                     case UserMenuCommand.Show_All_Pizzas:
-                        DisplayProductsMenu();
+                        ExecWhileHandlingError(DisplayProductsMenu);
                         break;
                     case UserMenuCommand.Order:
                         Buffer = (prods.Sum(p => p.Amount * p.Price)).ToString();
+                        InputHelper.PromptAndGetOrderInfoFromConsole();
                         break;
                     case UserMenuCommand.CRUD_Pizza:
                         break;
@@ -87,22 +107,27 @@ namespace GhostPizza.UI
 
         public void DisplayProductsMenu()
         {
-            here:
-            try
-            {
-                InputHelper.DisplayProductsAndGetBasketFromConsole(prods,PrintBuffer,"How many? ");
-            }
-            catch (Exception ex) 
-            {
-                Buffer = ex.Message;
-                goto here;
-            }
+            InputHelper.DisplayProductsAndGetBasketFromConsole(prods,PrintBuffer,"How many? ");
         }
 
-        public string Buffer { get; set; }
+        private void BufferError(string msg)
+        {
+            Buffer = string.Empty;
+            Buffer = $"(!) {msg}";
+        }
+
+        /// <summary>
+        /// Prints buffer to the console. Handles coloring (warning, error)
+        /// </summary>
         public void PrintBuffer()
         {
-            Console.WriteLine(Buffer);
+            if (Buffer != string.Empty)
+            {
+                if (Buffer.StartsWith("(!)"))
+                    ConsoleHelpers.PrintError($"\n{Buffer}\n");
+                else
+                    ConsoleHelpers.PrintPositive($"\n{Buffer}\n");
+            }
             Buffer = string.Empty;
         }
 

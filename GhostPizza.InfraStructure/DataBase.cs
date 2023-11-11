@@ -1,4 +1,4 @@
-﻿using GhostPizza.Core.Models;
+using GhostPizza.Core.Models;
 
 namespace GhostPizza.InfraStructure
 {

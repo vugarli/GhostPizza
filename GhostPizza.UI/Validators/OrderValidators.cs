@@ -10,7 +10,7 @@ namespace GhostPizza.UI.Validators
 {
     internal static class OrderValidators
     {
-        private const string PhonePattern = @"^\+[1-9]\d{1,2}\s?0?5[1-9]\s?\d{3}\s ?\d{2}\s ?\d{2}$";
+        private const string PhonePattern = @"^\+[1-9]\d{1,2}\s[0-9][0-9][0-9]\s?\d{3}\s ?\d{2}\s ?\d{2}$";
         public static void ValidatePhoneNumber(string phoneNumber)
         {
             var match = Regex.IsMatch(phoneNumber, PhonePattern);

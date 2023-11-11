@@ -209,7 +209,8 @@ namespace GhostPizza.UI.Helpers
                     .Sum(p => p.Pizza.Price * p.AmountInBasket);
 
                 ConsoleHelpers.PrintBuffer();
-                Console.WriteLine("Current total: " + currentTotal);
+                Console.Write("Current total: ");
+                ConsoleHelpers.PrintError($"{currentTotal}$");
                 ConsoleHelpers.PrintWarning("Press B to exit menu with current basket!\n");
                 ConsoleHelpers.PrintWarning(saleProducts[currentElementIndex].IsAddedToBasket ? "Press X to remove item":"Press enter to add item to basket");
 
@@ -230,7 +231,8 @@ namespace GhostPizza.UI.Helpers
                         Console.Write("  ");
 
                     var itemStatusMessage = (saleProducts[i].AmountInBasket != 0 ? $" {saleProducts[i].AmountInBasket}x Added to basket" : "");
-                    Console.WriteLine(saleProducts[i].Pizza.Name+" "+saleProducts[i].Pizza.Price+"$ "+ itemStatusMessage );
+                    Console.Write(saleProducts[i].Pizza.Name+" "+saleProducts[i].Pizza.Price+"$ " );
+                    ConsoleHelpers.InlinePositive($"{itemStatusMessage}\n");
                 }
                 
 

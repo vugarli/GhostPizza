@@ -61,7 +61,7 @@ namespace GhostPizza.UI
                 UserCrudCommand.Remove,
                 UserCrudCommand.Quit
             };
-
+        public List<SaleProduct> SaleProds { get; set; } = DataBase.Pizzas.Select(p => new SaleProduct(p)).ToList();
 
         public Ui()
         {
@@ -85,7 +85,7 @@ namespace GhostPizza.UI
 
         public void DisplayLoginRegisterMenu()
         {
-            LoginRegisterMenuCommand command = InputHelper.DisplayAndGetCommandBySelection(initialCommands);
+            LoginRegisterMenuCommand command = InputHelper.DisplayAndGetCommandBySelection(initialCommands,ConsoleHelpers.Splash);
                 
             switch (command)
             {
@@ -114,6 +114,7 @@ namespace GhostPizza.UI
                         (string mobileNumber,string address) = InputHelper.PromptAndGetOrderInfoFromConsole();
                         ConsoleHelpers.PrintInvoice(LoggedInUser, address, mobileNumber);
                         LoggedInUser.Basket.ClearBasket();
+                        SaleProds = DataBase.Pizzas.Select(p => new SaleProduct(p)).ToList();
                         break;
                     case UserMenuCommand.CRUD_Pizza:
                         ConsoleHelpers.ExecWhileHandlingError(DisplayPizzaCrud);
@@ -139,7 +140,9 @@ namespace GhostPizza.UI
                         break;
                     case PizzaCrudCommand.Add:
                         (string name, decimal price) = PizzaHelper.GetPizzaInfoFromConsole();
-                        PizzaService.AddPizza(new Pizza(name,price));
+                        var pizza = new Pizza(name, price);
+                        PizzaService.AddPizza(pizza);
+                        SaleProds.Add(new(pizza));
                         ConsoleHelpers.Buffer = "Added new pizza!";
                         break;
                     case PizzaCrudCommand.Update:
@@ -149,6 +152,7 @@ namespace GhostPizza.UI
                     case PizzaCrudCommand.Remove:
                         var idToRemove = InputHelper.DisplayAndGetElementBySelection(DataBase.Pizzas,"Remove pizza");
                         PizzaService.RemovePizza(DataBase.Pizzas[idToRemove].Id);
+                        SaleProds.RemoveAll(p => p.Pizza.Id == DataBase.Pizzas[idToRemove].Id);
                         ConsoleHelpers.BufferError("Removed pizza!");
                         break;
                 }
@@ -195,7 +199,7 @@ namespace GhostPizza.UI
         public void DisplayProductsMenu()
         {
             InputHelper.DisplayProductsAndGetBasketFromConsole(LoggedInUser.Basket,
-                DataBase.Pizzas.Select(p=> new SaleProduct(p)).ToList()
+                SaleProds
                 ,"How many? ");
         }
 

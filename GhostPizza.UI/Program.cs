@@ -12,20 +12,20 @@ namespace GhostPizza.UI
     {
         static void Main()
         {
+            //Seeding
+
             User admin = new("admin","admin","admin","admin");
             admin.UserType = UserType.Admin;
-
-            User regular = new("reg","reg","reg","reg");
             UserService.AddUser(admin);
-            UserService.AddUser(regular);
+            UserService.AddUser(new("reg", "reg", "reg", "reg"));
 
-            Pizza pizza1 = new Pizza("Gobelekli",10.3m);
-            Pizza pizza2 = new Pizza("Salamili",14.3m);
-            Pizza pizza3 = new Pizza("Pepperoni",9.3m);
-
-            PizzaService.AddPizza(pizza1);
-            PizzaService.AddPizza(pizza2);
-            PizzaService.AddPizza(pizza3);
+            PizzaService.AddPizza(new("Gobelekli", 10.3m));
+            PizzaService.AddPizza(new("Salamili", 14.3m));
+            PizzaService.AddPizza(new("Pepperoni", 9.3m));
+            PizzaService.AddPizza(new("Qarisiq",14.56m));
+            PizzaService.AddPizza(new("Meksika acili",4.99m));
+            PizzaService.AddPizza(new("Ananasli",3.99m));
+            PizzaService.AddPizza(new("Special Ghost Pizza",20.99m));
 
             Ui ui = new Ui();
             ui.Start();

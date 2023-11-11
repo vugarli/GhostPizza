@@ -53,7 +53,7 @@ namespace GhostPizza.UI.Helpers
             return (mobileNumber, address);
         }
 
-        public static int PromptAndTryGetPositiveInt(string prompt)
+        public static int PromptAndTryGetPositiveInt(string prompt = "")
         {
             int input = 0;
             do
@@ -248,7 +248,7 @@ namespace GhostPizza.UI.Helpers
 
                 if (keyPress == ConsoleKey.B)
                 {
-                    basket.Products.AddRange(saleProducts.FindAll(p=>p.IsAddedToBasket).Select(p=>new BasketElement(p.Pizza,p.AmountInBasket)));
+                    basket.Products = (saleProducts.FindAll(p=>p.IsAddedToBasket).Select(p=>new BasketElement(p.Pizza,p.AmountInBasket)).ToList());
                     return;
                 }
 
@@ -260,7 +260,7 @@ namespace GhostPizza.UI.Helpers
                         Console.SetCursorPosition(colIndx,rowIndx);
                         ConsoleHelpers.InlineWarning(dialogPrompt);
                         Console.SetCursorPosition(colIndx+dialogPrompt.Length+3,rowIndx);
-                        int amount = PromptAndTryGetPositiveInt("");
+                        int amount = PromptAndTryGetPositiveInt();
                         colIndx = 0;
                         saleProducts[currentElementIndex].AmountInBasket = amount;
                         saleProducts[currentElementIndex].IsAddedToBasket = true;    

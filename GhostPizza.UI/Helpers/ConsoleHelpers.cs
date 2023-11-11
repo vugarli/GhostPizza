@@ -17,6 +17,24 @@ namespace GhostPizza.UI.Helpers
 
 
 
+        public static int ExecActionWhileHandlingError(Func<string,int> action,string msg)
+        {
+            bool failed = false;
+            do
+            {
+                try
+                {
+                    return action.Invoke(msg);
+                    failed = false;
+                }
+                catch (Exception e)
+                {
+                    BufferError(e.Message);
+                    failed = true;
+                }
+            } while (failed);
+            return -1;
+        }
         public static void ExecWhileHandlingError(Action action)
         {
             bool failed = false;
@@ -112,5 +130,32 @@ namespace GhostPizza.UI.Helpers
         public static void PrintWarning(string warningMsg) => InlineWarning(warningMsg + "\n");
 
         public static void PrintPositive(string msg) => InlinePositive(msg + "\n");
+
+        public static string Splash = @"            
+                            
+          ▁                 
+        ▁▁▁▁    ▁▁▁▁▁       
+      ▁▁▁▁▁▁    ▁▁▁▁▁▁▁     
+     ▁▁▁▁▁▁▁▁  ▁▁▁▁▁▁▁▁▁    
+     ▁▁▁▁▁▁▁▁  ▁▁▁▁▁▁▁▁▁    
+          ▁▁▁  ▁▁▁          
+                ▁           
+    ▁▁▁   ▁▁▁  ▁▁▁    ▁▁    
+    ▁▁▁▁▁▁▁▁    ▁▁▁▁▁▁▁▁▁   
+     ▁▁▁▁▁▁▁▁  ▁▁▁▁▁▁▁      
+        ▁▁▁▁▁  ▁▁▁▁▁        
+        ▁▁▁▁▁  ▁▁▁▁▁        
+          ▁▁    ▁▁▁▁        
+           ▁     ▁          
+                            
+                            
+
+        GHOST PIZZA
+";
+
+        public static void PrintSplash()
+        {
+            Console.WriteLine(Splash);
+        }
     }
 }

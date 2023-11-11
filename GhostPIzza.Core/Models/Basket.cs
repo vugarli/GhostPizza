@@ -9,5 +9,10 @@ namespace GhostPizza.Core.Models
     public class Basket
     {
         public List<BasketElement> Products { get; set; } = new List<BasketElement>();
+        
+        public void ClearBasket()
+        {
+            Products.Clear();
+        }
     }
 }

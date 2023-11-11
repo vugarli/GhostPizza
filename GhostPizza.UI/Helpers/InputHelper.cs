@@ -42,10 +42,15 @@ namespace GhostPizza.UI.Helpers
             return input;
         }
 
-        public static void PromptAndGetOrderInfoFromConsole()
+        public static (string mobileNumber,string address) PromptAndGetOrderInfoFromConsole()
         {
-            var mobileNumber = PromptAndTryGetNonEmptyString("Phone number: ");
+            Console.Write("Phone number: ");
+            ConsoleHelpers.InlineWarning("+994 051 123 45 67");
+            Console.SetCursorPosition(14,Console.CursorTop);
+            var mobileNumber = Console.ReadLine();
+            Validators.OrderValidators.ValidatePhoneNumber(mobileNumber);
             var address = PromptAndTryGetNonEmptyString("Address: ");
+            return (mobileNumber, address);
         }
 
         public static int PromptAndTryGetPositiveInt(string prompt)
@@ -251,10 +256,10 @@ namespace GhostPizza.UI.Helpers
                 {
                     if (keyPress == ConsoleKey.Enter)
                     {
-                        colIndx += saleProducts[currentElementIndex].Pizza.Name.Length + 6;
+                        colIndx += saleProducts[currentElementIndex].Pizza.Name.Length + 10;
                         Console.SetCursorPosition(colIndx,rowIndx);
                         ConsoleHelpers.InlineWarning(dialogPrompt);
-                        Console.SetCursorPosition(colIndx+dialogPrompt.Length+5,rowIndx);
+                        Console.SetCursorPosition(colIndx+dialogPrompt.Length+3,rowIndx);
                         int amount = PromptAndTryGetPositiveInt("");
                         colIndx = 0;
                         saleProducts[currentElementIndex].AmountInBasket = amount;

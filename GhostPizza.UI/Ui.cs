@@ -111,8 +111,9 @@ namespace GhostPizza.UI
                         ConsoleHelpers.ExecWhileHandlingError(DisplayProductsMenu);
                         break;
                     case UserMenuCommand.Order:
-                        ConsoleHelpers.Buffer = (LoggedInUser.Basket.Products.Sum(p => p.Count * p.Pizza.Price)).ToString();
-                        InputHelper.PromptAndGetOrderInfoFromConsole();
+                        (string mobileNumber,string address) = InputHelper.PromptAndGetOrderInfoFromConsole();
+                        ConsoleHelpers.PrintInvoice(LoggedInUser, address, mobileNumber);
+                        LoggedInUser.Basket.ClearBasket();
                         break;
                     case UserMenuCommand.CRUD_Pizza:
                         ConsoleHelpers.ExecWhileHandlingError(DisplayPizzaCrud);

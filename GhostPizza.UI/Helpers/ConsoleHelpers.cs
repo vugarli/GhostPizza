@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GhostPizza.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -90,6 +91,21 @@ namespace GhostPizza.UI.Helpers
             Console.Write(SELECTION_CURSOR);
             Console.ResetColor();
         }
+
+        public static void PrintInvoice(User loggedInUser, string address, string phoneNumber)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Thank you for choosing GhostPizza 💀\n");
+            sb.AppendLine("Purchased items:\n");
+            var totalCost = loggedInUser.Basket.Products.Sum(p => p.Count * p.Pizza.Price);
+            foreach (var item in loggedInUser.Basket.Products)
+                sb.AppendLine($"{item.Pizza.Name}  {item.Pizza.Price}  {item.Count}x");
+            sb.AppendLine($"\nOrder Total: {totalCost}$ ");
+            sb.AppendLine($"\nWil be delivered to: {address}");
+            sb.AppendLine($"Contact information:{phoneNumber}");
+            Buffer = sb.ToString();
+        }
+
 
         public static void PrintError(string errorMsg) => InlineError(errorMsg + "\n");
 

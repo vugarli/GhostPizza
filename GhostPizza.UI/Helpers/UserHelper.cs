@@ -1,8 +1,9 @@
 ﻿using GhostPizza.Core.Models;
-using GhostPizza.Core.Validators;
+using CoreValidator = GhostPizza.Core.Validators;
 using GhostPizza.InfraStructure.Services;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace GhostPizza.UI.Helpers
             get => _name;
             set 
             {
-                Validators.ValidateName(value);
+                CoreValidator.Validators.ValidateName(value);
                 _name = value;
             } 
         }
@@ -30,7 +31,7 @@ namespace GhostPizza.UI.Helpers
             get => _surname;
             set 
             {
-                Validators.ValidateName(value);
+                CoreValidator.Validators.ValidateName(value);
                 _surname = value;
             } 
         }
@@ -50,7 +51,7 @@ namespace GhostPizza.UI.Helpers
             get => _password;
             set 
             {
-                Validators.ValidatePassword(value);
+                CoreValidator.Validators.ValidatePassword(value);
                 _password = value;
             } 
         }

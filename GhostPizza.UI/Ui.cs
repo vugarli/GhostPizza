@@ -16,7 +16,6 @@ namespace GhostPizza.UI
 {
     internal class Ui
     {
-        public User LoggedInUser { get; set; } = null;
 
         LoginRegisterMenuCommand[] initialCommands = 
             new LoginRegisterMenuCommand[]
@@ -68,6 +67,7 @@ namespace GhostPizza.UI
             
         }
 
+        public User LoggedInUser { get; set; } = null;
 
         public void Start()
         {

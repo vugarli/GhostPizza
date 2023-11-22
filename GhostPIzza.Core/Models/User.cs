@@ -29,7 +29,7 @@ namespace GhostPizza.Core.Models
 
         public override string ToString()
         {
-            return $"{Id} {Name} {Surname} {UserName}";
+            return $"Id => {Id} Name => {Name} Surname => {Surname} UserName => {UserName} Type => {UserType}";
         }
     }
 }
